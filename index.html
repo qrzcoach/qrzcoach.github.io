@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apresentação de Dados</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fcdb00;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            position: relative;
+            padding-right: 120px; /* Espaçamento para acomodar a logo */
+            margin-bottom: 20px; /* Adicionado um espaço abaixo do título */
+        }
+        .logo {
+            position: absolute;
+            top: 0;
+            right: 0;
+            transform: translate(50%, -50%);
+            width: 100px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px auto;
+            background-color: #fff;
+            font-size: 12px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .identidade-visual {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .valor {
+            width: 100px;
+        }
+        .meta-total, .percentual-total {
+            background-color: rgba(0, 0, 0, 0.1); /* Escurecer as colunas */
+        }
+        canvas {
+            margin: 20px auto;
+            display: block;
+            width: 100%;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Plano de Redução Financeira do Estoque - Meta x Reduzido</h1> <!-- Removida a quebra de linha -->
+        <img src="1200px-Logo_do_Praia_com_contorno_preto (1).png" alt="Logo Praia Clube" class="logo"> <!-- Logo movida para dentro do título -->
+
+        <table>
+            <tr>
+                <th class="identidade-visual">Comprador</th>
+                <th class="identidade-visual">Meta - ABR/24</th>
+                <th class="identidade-visual">Reduziu - ABR/24</th>
+                <th class="identidade-visual">% Atingida - ABR/24</th>
+                <th class="identidade-visual">Meta - MAIO/24</th>
+                <th class="identidade-visual">Reduziu - MAI/24</th>
+                <th class="identidade-visual">% Atingida - MAI/24</th>
+                <th class="identidade-visual meta-total">META TOTAL</th>
+                <th class="identidade-visual">REDUÇÃO TOTAL</th>
+                <th class="identidade-visual percentual-total">% Atingida TOTAL</th>
+            </tr>
+            <tr>
+                <td>STEFFEN</td>
+                <td class="valor">R$ 5.979,10</td>
+                <td class="valor">R$ 63.156,83</td>
+                <td>1.330,41%</td>
+                <td class="valor">R$ 8.990,96</td>
+                <td class="valor">R$ 9.682</td>
+                <td>107,62%</td>
+                <td class="valor">R$ 29.895,51</td>
+                <td class="valor">R$ 72.838,73</td>
+                <td>243,85%</td>
+            </tr>
+            <tr>
+                <td>RODRIGO</td>
+                <td class="valor">R$ 9.064,48</td>
+                <td class="valor">R$ 9.756,89</td>
+                <td>107,56%</td>
+                <td class="valor">R$ 13.596,72</td>
+                <td class="valor">R$ 5.900</td>
+                <td>43,36%</td>
+                <td class="valor">R$ 45.322,41</td>
+                <td class="valor">R$ 15.656,63</td>
+                <td>34,54%</td>
+            </tr>
+            <tr>
+                <td>ROSENVALDO</td>
+                <td class="valor">R$ 20.096,72</td>
+                <td class="valor">R$ 65.156,83</td>
+                <td>324,25%</td>
+                <td class="valor">R$ 30.145,09</td>
+                <td class="valor">R$ 2.716</td>
+                <td>9,00%</td>
+                <td class="valor">R$ 100.483,62</td>
+                <td class="valor">R$ 67.872,37</td>
+                <td>67,60%</td>
+            </tr>
+            <tr>
+                <td><strong>TOTAL</strong></td>
+                <td class="valor"><strong>R$ 35.140,31</strong></td>
+                <td class="valor"><strong>R$ 138.070,55</strong></td>
+                <td><strong>392,93%</strong></td>
+                <td class="valor"><strong>R$ 52.732,77</strong></td>
+                <td class="valor"><strong>R$ 18.297,18</strong></td>
+                <td><strong>34,72%</strong></td>
+                <td class="valor"><strong>R$ 175.701,54</strong></td>
+                <td class="valor"><strong>R$ 156.367,73</strong></td>
+                <td><strong>89,00%</strong></td>
+            </tr>
+        </table>
+
+        <p style="text-align: center;"><strong>Posição Atual do Estoque:</strong> R$ 616.520,45</p>
+
+        <canvas id="estoqueChart"></canvas>
+    </div>
+
+    <div class="footer">
+        Departamento de Compras - Atualizado em 08/05/2024
+    </div>
+
+    <script>
+        var ctx = document.getElementById('estoqueChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: [
+                    'Serviços de Impressão',
+                    'Copa e Cozinha',
+                    'Papelaria e Mat. Escritório',
+                    'Higiene',
+                    'Cervejas',
+                    'Refrigerantes e Sucos',
+                    'Souvenirs e Utilidades',
+                    'Elétrica',
+                    'Doses',
+                    'Limpeza',
+                    'Secos e Molhados',
+                    'Hidráulica',
+                    'Equipamentos de Proteção',
+                    'Bebidas Alcoólicas',
+                    'Adubos/Defensivos/Veterinários',
+                    'Pintura',
+                    'Rouparia e Uniformes',
+                    'Padaria',
+                    'Vinho',
+                    'Uniformes Funcs em Geral',
+                    'Serralheria',
+                    'Carne Bovina',
+                    'Carne Peixe',
+                    'Carne Suína',
+                    'Material Conservação',
+                    'Ferramentas/Maq. e Equipamentos',
+                    'Bebidas Alcoólicas Produção',
+                    'Frios',
+                    'Material Posto Médico',
+                    'Marcenaria',
+                    'Instalações',
+                    'Máquinas Equipamentos F',
+                    'Direito Licença Software',
+                    'Móveis e Utensílios',
+                    'Ferramentas',
+                    'Uniformes Escola Esportes',
+                    'Frutos do Mar',
+                    'Máquinas Equipamentos',
+                    'Açaí/Sorvetes',
+                    'Carne Frango',
+                    'Material P/Uso e Consumo',
+                    'Rações e Concentrados',
+                    'Material Esportivo',
+                    'HortifrutiGranjeiros',
+                    'Recuperações e Reformas',
+                    'Químicos'
+                ],
+                datasets: [{
+                    label: 'Custo Total (R$)',
+                    data: [
+                        18522.56,
+                        28561.24,
+                        63080.11,
+                        9803.30,
+                        27650.35,
+                        5885.26,
+                        26992.45,
+                        57182.84,
+                        3814.59,
+                        23691.81,
+                        20710.54,
+                        63255.60,
+                        32622.50,
+                        1795.17,
+                        4675.51,
+                        5760.45,
+                        3693.57,
+                        403.88,
+                        12153.70,
+                        61788.82,
+                        2946.56,
+                        10328.53,
+                        5688.87,
+                        2581.35,
+                        2289.76,
+                        11556.62,
+                        356.95,
+                        13295.88,
+                        596.74,
+                        335.70,
+                        819.38,
+                        31145.13,
+                        356.10,
+                        47060.00,
+                        15118.63
+                    ],
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    datalabels: {
+                        color: '#000000',
+                        anchor: 'end',
+                        align: 'top',
+                        formatter: function(value, context) {
+                            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                        },
+                        offset: 4 // Espaçamento entre o valor e a barra
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>
